@@ -6,7 +6,10 @@ const formatDate = (value) => {
 };
 
 const ReviewListItem = (props) => {
-  const { item } = props;
+  const { item, onDelete } = props;
+
+  const handleDeleteClick = () => onDelete(item.id);
+
   return (
     <div className="ReviewListItem">
       <img className="ReviewListItem-img" src={item.imgUrl} alt="item.title" />
@@ -15,20 +18,21 @@ const ReviewListItem = (props) => {
         <p>{item.rating}</p>
         <p>{formatDate(item.createdAt)}</p>
         <p>{item.content}</p>
+        <button onClick={handleDeleteClick}>삭제</button>
       </div>
     </div>
   );
 };
 
 const ReviewList = (props) => {
-  const { items } = props;
+  const { items, onDelete } = props;
   return (
     <>
       <ul>
         {items.map((item) => {
           return (
             <li>
-              <ReviewListItem item={item} />
+              <ReviewListItem item={item} onDelete={onDelete} />
             </li>
           );
         })}
