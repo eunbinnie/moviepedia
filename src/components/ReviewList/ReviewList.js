@@ -31,7 +31,7 @@ const ReviewList = (props) => {
       <ul>
         {items.map((item) => {
           return (
-            <li>
+            <li key={item.id}>
               <ReviewListItem item={item} onDelete={onDelete} />
             </li>
           );

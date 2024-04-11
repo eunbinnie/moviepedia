@@ -3,10 +3,10 @@
  */
 import { useState } from "react";
 import ReviewList from "./components/ReviewList/ReviewList";
-import mockItems from "./mock.json";
+import { getReviews } from "./api";
 
 const App = () => {
-  const [items, setItems] = useState(mockItems);
+  const [items, setItems] = useState([]);
   const [order, setOrder] = useState("createdAt"); // 정렬 기본 기준 : 최신순
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // 베스트순 정렬
 
@@ -20,6 +20,11 @@ const App = () => {
     setItems(nextItems);
   };
 
+  const handleLoadClick = async () => {
+    const { reviews } = await getReviews();
+    setItems(reviews);
+  };
+
   return (
     <div>
       <div>
@@ -27,6 +32,7 @@ const App = () => {
         <button onClick={handleBestClick}>베스트순</button>
       </div>
       <ReviewList items={sortedItems} onDelete={handleDelete} />
+      <button onClick={handleLoadClick}>불러오기</button>
     </div>
   );
 };
