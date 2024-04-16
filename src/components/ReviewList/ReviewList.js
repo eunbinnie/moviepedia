@@ -30,7 +30,7 @@ const ReviewListItem = (props) => {
 };
 
 const ReviewList = (props) => {
-  const { items, onDelete } = props;
+  const { items, onDelete, onUpdate, onUpdateSuccess } = props;
   const [editingId, setEditingId] = useState(null); // 현재 수정 중인 요소의 id를 저장
 
   const handleCancel = () => setEditingId(null);
@@ -40,8 +40,16 @@ const ReviewList = (props) => {
       <ul>
         {items.map((item) => {
           if (item.id === editingId) {
-            const { imgUrl, title, rating, content } = item;
+            const { id, imgUrl, title, rating, content } = item;
             const initialValues = { title, rating, content };
+
+            const handleSubmit = (formData) => onUpdate(id, formData);
+
+            const handleSubmitSuccess = (review) => {
+              onUpdateSuccess(review);
+              setEditingId(null);
+            };
+
             return (
               <li key={item.id}>
                 {/* input 요소로 재렌더링 */}
@@ -49,6 +57,8 @@ const ReviewList = (props) => {
                   initialValues={initialValues}
                   initialPreview={imgUrl}
                   onCancel={handleCancel}
+                  onSubmit={handleSubmit}
+                  onSubmitSuccess={handleSubmitSuccess}
                 />
               </li>
             );
