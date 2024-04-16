@@ -2,6 +2,7 @@ const BASE_URL = "https://learn.codeit.kr/9516";
 /**
  * 리퀘스트 함수들을 모아놓는 함수
  */
+// 글 받아오기
 export const getReviews = async ({
   order = "createdAt",
   offset = 0, // 지금까지 받아온 데이터 개수
@@ -16,6 +17,7 @@ export const getReviews = async ({
   return body;
 };
 
+// 글 추가하기
 export const createReview = async (formData) => {
   const response = await fetch(`${BASE_URL}/film-reviews`, {
     method: "POST",
@@ -28,6 +30,7 @@ export const createReview = async (formData) => {
   return body;
 };
 
+// 글 수정하기
 export const updateReview = async (id, formData) => {
   const response = await fetch(`${BASE_URL}/film-reviews/${id}`, {
     method: "PUT",
@@ -35,6 +38,18 @@ export const updateReview = async (id, formData) => {
   });
   if (!response.ok) {
     throw new Error("리뷰를 수정하는데 실패했습니다");
+  }
+  const body = response.json();
+  return body;
+};
+
+// 글 삭제하기
+export const deleteReview = async (id) => {
+  const response = await fetch(`${BASE_URL}/film-reviews/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("리뷰를 삭제하는데 실패했습니다");
   }
   const body = response.json();
   return body;
