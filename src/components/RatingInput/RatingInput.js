@@ -5,8 +5,6 @@ import "./RatingInput.css";
 const RatingInput = ({ name, value, onChange }) => {
   const [rating, setRating] = useState(value);
 
-  console.log(setRating, "setrating");
-
   const handleSelect = (nextValue) => onChange(name, nextValue);
   const handleMouseOut = () => setRating(value);
   return (

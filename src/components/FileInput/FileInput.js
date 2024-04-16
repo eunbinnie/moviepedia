@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const FileInput = ({ name, value, onChange }) => {
-  const [preview, setPreview] = useState();
+const FileInput = ({ name, value, initialPreview, onChange }) => {
+  const [preview, setPreview] = useState(initialPreview);
 
   const inputRef = useRef();
 
@@ -28,10 +28,10 @@ const FileInput = ({ name, value, onChange }) => {
     setPreview(nextPreview);
 
     return () => {
-      setPreview(); // preview State를 초기화
+      setPreview(initialPreview); // preview State를 초기화
       URL.revokeObjectURL(nextPreview); // 앞에서 만든 ObjectURL 해제
     };
-  }, [value]);
+  }, [value, initialPreview]);
 
   return (
     <div>
