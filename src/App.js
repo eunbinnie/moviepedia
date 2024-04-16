@@ -4,8 +4,7 @@
 import { useEffect, useState } from "react";
 import ReviewForm from "./components/ReviewForm/ReviewForm";
 import ReviewList from "./components/ReviewList/ReviewList";
-import { createReview, deleteReview, getReviews, updateReview } from "./api";
-import useAsync from "./hooks/useAsync";
+import { createReview, getReviews, updateReview } from "./api";
 
 const LIMIT = 6;
 
@@ -14,7 +13,9 @@ const App = () => {
   const [order, setOrder] = useState("createdAt"); // 정렬 기본 기준 : 최신순
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(false);
-  const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
+  // 현재 네트워크가 request 중이면 true, 아니면 false
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // 베스트순 정렬
 
@@ -23,17 +24,25 @@ const App = () => {
   const handleBestClick = () => setOrder("rating");
 
   // 아이템 삭제
-  const handleDelete = async (id) => {
-    const result = deleteReview(id);
-    if (!result) return;
-
-    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const handleDelete = (id) => {
+    const nextItems = items.filter((item) => item.id !== id);
+    setItems(nextItems);
   };
 
   // 영화 리스트 렌더링
   const handleLoad = async (options) => {
-    let result = await getReviewsAsync(options);
-    if (!result) return;
+    let result;
+
+    try {
+      setIsLoading(true);
+      setLoadingError(null);
+      result = await getReviews(options);
+    } catch (error) {
+      setLoadingError(error);
+      return;
+    } finally {
+      setIsLoading(false);
+    }
 
     const { reviews, paging } = result;
     if (options.offset === 0) {
