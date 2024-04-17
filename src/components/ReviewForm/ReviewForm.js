@@ -4,6 +4,7 @@ import "./ReviewForm.css";
 import FileInput from "../FileInput/FileInput";
 import RatingInput from "../RatingInput/RatingInput";
 import useAsync from "../../hooks/useAsync";
+import useTranslate from "../../hooks/useTranslate";
 
 const INITIAL_VALUES = {
   title: "",
@@ -19,6 +20,7 @@ const ReviewForm = ({
   onCancel,
   onSubmit,
 }) => {
+  const t = useTranslate();
   const [values, setValues] = useState(initialValues);
   const [isSubmitting, submittingError, onSubmitAsync] = useAsync(onSubmit);
 
@@ -71,10 +73,10 @@ const ReviewForm = ({
         onChange={handleInputChange}
       />
       {/* 데이터 전송을 위한 버튼 type : submit */}
+      {onCancel && <button onClick={onCancel}>{t("cancel button")}</button>}
       <button type="submit" disabled={isSubmitting}>
-        확인
+        {t("confirm button")}
       </button>
-      {onCancel && <button onClick={onCancel}>취소</button>}
       {submittingError?.message && <div>{submittingError.message}</div>}
     </form>
   );
