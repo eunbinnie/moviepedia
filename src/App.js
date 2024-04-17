@@ -1,10 +1,11 @@
 /**
  * App 컴포넌트 : 최상위 컴포넌트
  */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReviewForm from "./components/ReviewForm/ReviewForm";
 import ReviewList from "./components/ReviewList/ReviewList";
 import { createReview, getReviews, updateReview } from "./api";
+import useAsync from "./hooks/useAsync";
 
 const LIMIT = 6;
 
@@ -13,9 +14,7 @@ const App = () => {
   const [order, setOrder] = useState("createdAt"); // 정렬 기본 기준 : 최신순
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(false);
-  // 현재 네트워크가 request 중이면 true, 아니면 false
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingError, setLoadingError] = useState(null);
+  const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
 
   const sortedItems = items.sort((a, b) => b[order] - a[order]); // 베스트순 정렬
 
@@ -30,29 +29,22 @@ const App = () => {
   };
 
   // 영화 리스트 렌더링
-  const handleLoad = async (options) => {
-    let result;
+  const handleLoad = useCallback(
+    async (options) => {
+      let result = await getReviewsAsync(options);
+      if (!result) return;
 
-    try {
-      setIsLoading(true);
-      setLoadingError(null);
-      result = await getReviews(options);
-    } catch (error) {
-      setLoadingError(error);
-      return;
-    } finally {
-      setIsLoading(false);
-    }
-
-    const { reviews, paging } = result;
-    if (options.offset === 0) {
-      setItems(reviews);
-    } else {
-      setItems((prevItems) => [...prevItems, ...reviews]);
-    }
-    setOffset(options.offset + reviews.length);
-    setHasNext(paging.hasNext);
-  };
+      const { reviews, paging } = result;
+      if (options.offset === 0) {
+        setItems(reviews);
+      } else {
+        setItems((prevItems) => [...prevItems, ...reviews]);
+      }
+      setOffset(options.offset + reviews.length);
+      setHasNext(paging.hasNext);
+    },
+    [getReviewsAsync]
+  );
 
   // 다음 페이지를 불러올 함수
   const handleLoadMore = () => {
@@ -77,7 +69,7 @@ const App = () => {
 
   useEffect(() => {
     handleLoad({ order, offset: 0, limit: LIMIT });
-  }, [order]);
+  }, [order, handleLoad]);
 
   return (
     <div>
